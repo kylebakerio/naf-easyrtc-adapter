@@ -52,8 +52,7 @@ Include and configure `naf-easyrtc-adapter` and dependecies.
 
   <script src="https://unpkg.com/networked-aframe@0.7.1/dist/networked-aframe.js"></script>  
   <script src="/dist/naf-easyrtc-adapter.js"></script>
-<!-- for some reason, using this source causes a failure, and I can't currently think of why that is: -->
-<!--   <script src="https://unpkg.com/naf-easyrtc-adapter/dist/naf-easyrtc-adapter.min.js"></script>  -->
+  <script src="https://raw.githack.com/kylebakerio/naf-easyrtc-adapter/master/dist/naf-easyrtc-adapter.js"></script>
 </head>
 
 <body>
