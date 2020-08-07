@@ -12,8 +12,9 @@ Not much, in the demo you'll find:
 
 - this is the current basic-audio demo from the networked-aframe main master repo demos from 0.7.1,
 - with aframe bumped up from 1.0.3 to 1.0.4,
-- with open-easyrtc added as per the pull request on the easyrtc adapter,
+- with open-easyrtc added as per the pull request on the NAF easyrtc adapter repo,
 - with the socket.io source from the same pull request included,
+- and with the package.json updated to include the relevent repos
 - and with the adapter switched to 'easyrtc'
 
 ## See an example on glitch
@@ -31,32 +32,35 @@ npm run dev # Start the local development server
 
 With the server running, browse the example at http://localhost:8080. Open another browser tab and point it to the same URL to see the other client.
 
-### Running on Glitch.com
+### See a live, editable running example on Glitch.com now
 
 [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/naf-071-openeasyrtc)
 
 ### Running your own server
 
-You can deploy the included websocket server to Heroku using the button below.
+Just deploy to heroku. It pretty much works out-of-the-box.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-Then include and configure `naf-easyrtc-adapter`.
+Include and configure `naf-easyrtc-adapter` and dependecies.
 
 ```html
 <html>
+
 <head>
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-  <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script>
-  <!-- Include naf-easyrtc-adapter *after* networked-aframe -->
-  <script src="https://unpkg.com/naf-easyrtc-adapter/dist/naf-easyrtc-adapter.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+  <script src="https://unpkg.com/open-easyrtc@^2.0.5/api/easyrtc.js"></script>
+
+  <script src="https://unpkg.com/networked-aframe@0.7.1/dist/networked-aframe.js"></script>  
+  <script src="https://raw.githack.com/kylebakerio/naf-easyrtc-adapter/master/dist/naf-easyrtc-adapter.js"></script>
 </head>
+
 <body>
-    <!-- Set adapter to easyrtc and serverURL to the url of your Heroku server. -->
-   <a-scene networked-scene="
-        adapter: easyrtc;
-        serverURL: ws://localhost:8080;
-    ">
+  <a-scene networked-scene="
+    room: basic;
+    debug: true;
+    audio: true;
+    adapter: easyrtc;
+  ">
   </a-scene>
 </body>
 </html>
