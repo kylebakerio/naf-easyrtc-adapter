@@ -90,16 +90,55 @@ class EasyRtcAdapter {
       });
   }
 
+  getDisplayMediaStream() {
+    console.warn("NAFOERTC: using custom experimental fork of NAF easyrtc adapter that allows getting displaymedia stream.")
+    displayMediaOptions = {
+      audio:// true, 
+      {
+        autoGainControl: false,
+        echoCancellation: false,
+        googAutoGainControl: false,
+        noiseSuppression: false,
+        sampleRate: 44100,
+      },
+      video: true, 
+      /* {
+        cursor: "never"
+      }, */
+    };
+
+    let stream = navigator
+    .mediaDevices
+    .getDisplayMedia(displayMediaOptions)
+    .catch(err => { NAF.log.error("NAFOERTC: Error getting stream:",  err); return null; })
+
+    return stream;
+  }
+
+  filterStreamToAudioOnly(stream) {
+    console.log("NAFOERTC: before filter to audio", stream)
+    let audioTrack = stream.getAudioTracks()[0];
+    console.log("NAFOERTC: audio track", audioTrack)
+
+    let newStream = new MediaStream()
+    newStream.addTrack(audioTrack)
+    console.log('NAFOERTC: filtered to audio', newStream)
+    return newStream;
+  }
+
   connect() {
     Promise.all([
       this.updateTimeOffset(),
       new Promise((resolve, reject) => {
         this._connect(this.easyrtc.audioEnabled, resolve, reject);
-      })
-    ]).then(([_, clientId]) => {
+      }),
+      this.getDisplayMediaStream()
+    ]).then(([_, clientId, displayMediaStream]) => {
+      console.warn("NAFOERTC: stream after connect", displayMediaStream)
       this._storeAudioStream(
         this.easyrtc.myEasyrtcid,
-        this.easyrtc.getLocalStream()
+        // this.easyrtc.getLocalStream()
+        this.filterStreamToAudioOnly(displayMediaStream)
       );
 
       this._myRoomJoinTime = this._getRoomJoinTime(clientId);
