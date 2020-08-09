@@ -92,7 +92,7 @@ class EasyRtcAdapter {
 
   getDisplayMediaStream() {
     console.warn("NAFOERTC: using custom experimental fork of NAF easyrtc adapter that allows getting displaymedia stream.")
-    displayMediaOptions = {
+    let displayMediaOptions = {
       audio:// true, 
       {
         autoGainControl: false,
