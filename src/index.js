@@ -135,10 +135,14 @@ class EasyRtcAdapter {
       this.getDisplayMediaStream()
     ]).then(([_, clientId, displayMediaStream]) => {
       console.warn("NAFOERTC: stream after connect", displayMediaStream)
+      easyrtc.register3rdPartyLocalMediaStream(this.filterStreamToAudioOnly(displayMediaStream), 'displayMedia-stream')
+      console.warn("NAFOERTC: attempted to filter to audio and register--result:")
+      console.warn("NAFOERTC:", this.easyrtc.getLocalStream('displayMedia-stream'))
       this._storeAudioStream(
         this.easyrtc.myEasyrtcid,
         // this.easyrtc.getLocalStream()
-        this.filterStreamToAudioOnly(displayMediaStream)
+        // this.filterStreamToAudioOnly(displayMediaStream)
+        this.easyrtc.getLocalStream('displayMedia-stream')        
       );
 
       this._myRoomJoinTime = this._getRoomJoinTime(clientId);
