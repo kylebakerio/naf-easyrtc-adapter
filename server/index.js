@@ -13,8 +13,8 @@ var easyrtc = require("open-easyrtc");      // NEW OPEN EasyRTC external module
 // Set process name
 process.title = "node-easyrtc";
 
-// Get port or default to 8080
-var port = process.env.PORT || 8080;
+// Get port or default to 8082
+var port = process.env.PORT || 8082;
 
 // Setup and configure Express http server. Expect a subfolder called "examples" to be the web root.
 var app = express();
@@ -27,6 +27,10 @@ var webServer = http.createServer(app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = socketIo.listen(webServer, {"log level":1});
+
+
+
+
 
 var myIceServers = [
   {"url":"stun:stun.l.google.com:19302"},

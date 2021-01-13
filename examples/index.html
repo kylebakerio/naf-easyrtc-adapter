@@ -2,8 +2,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Dev Example — naf-uws-adapter</title>
-  <meta name="description" content="Dev Example — naf-uws-adapter">
+  <title>Dev Example — naf-OPEN-easyrtc-adapter</title>
+  <meta name="description" content="Dev Example — naf-OPENeasyrtc-adapter">
 
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
@@ -11,20 +11,40 @@
 
   <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe@0.7.1/dist/networked-aframe.js">\x3C/script>')</script>  
   <script src="/dist/naf-easyrtc-adapter.js"></script>
+  <!-- can use the following when not including file directly in place of previous line:-->
+  <!-- <script src="https://gitcdn.xyz/cdn/kylebakerio/naf-easyrtc-adapter/8b0aa0b8483784a1af7fd955932c3fb07057d03e/dist/naf-easyrtc-adapter.js"></script> -->
 
-  <script src="https://unpkg.com/socket.io-client@^2.2.0/dist/socket.io.js"></script>
-  <script src="https://unpkg.com/open-easyrtc@^2.0.5/api/easyrtc.js"></script>
+  <!-- removed this imported component and copied relevant code directly here instead: -->
+  <!-- <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.js"></script> -->
+  <script>
+    AFRAME.registerComponent('random-color', {
+	  schema: {
+	    min: {default: {x: 0, y: 0, z: 0}, type: 'vec3'},
+	    max: {default: {x: 1, y: 1, z: 1}, type: 'vec3'}
+	  },
 
-  <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
-  <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
-  <script src="/spawn-in-circle.component.js"></script> <!-- todo: put this file in this repo -->
+	  update: function () {
+	    var data = this.data;
+	    var max = data.max;
+	    var min = data.min;
+	    this.el.setAttribute('material', 'color', '#' + new THREE.Color(
+	      Math.random() * max.x + min.x,
+	      Math.random() * max.y + min.y,
+	      Math.random() * max.z + min.z
+	    ).getHexString());
+	  }
+	});
+  </script>
+  <!-- removed this, just makes demo heavier for no real reason: -->
+  <!-- <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script> -->
+  <!-- <script src="/spawn-in-circle.component.js"></script> -->
 
   
 </head>
 
 <body>
   <a-scene networked-scene="
-    room: basic;
+    room: default;
     debug: true;
     audio: true;
     adapter: easyrtc;
