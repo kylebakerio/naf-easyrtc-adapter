@@ -7,8 +7,8 @@ class EasyRtcAdapter {
     this.app = "default";
     this.room = "default";
 
-    this.audioStreams = {};
-    this.pendingAudioRequest = {};
+    this.mediaStreams = {};
+    this.pendingMediaRequest = {};
 
     this.serverTimeRequests = 0;
     this.timeOffsets = [];
@@ -30,13 +30,13 @@ class EasyRtcAdapter {
 
   // options: { datachannel: bool, audio: bool }
   setWebRtcOptions(options) {
-    // this.easyrtc.enableDebug(true);
+    this.easyrtc.enableDebug(false);
     this.easyrtc.enableDataChannels(options.datachannel);
 
-    this.easyrtc.enableVideo(false);
+    this.easyrtc.enableVideo(options.video);
     this.easyrtc.enableAudio(options.audio);
 
-    this.easyrtc.enableVideoReceive(false);
+    this.easyrtc.enableVideoReceive(true);
     this.easyrtc.enableAudioReceive(true);
   }
 
@@ -94,17 +94,19 @@ class EasyRtcAdapter {
     Promise.all([
       this.updateTimeOffset(),
       new Promise((resolve, reject) => {
-        this._connect(this.easyrtc.audioEnabled, resolve, reject);
+        this._connect(this.easyrtc.audioEnabled || this.easyrtc.videoEnabled, resolve, reject);
       })
-    ]).then(([_, clientId]) => {
-      this._storeAudioStream(
+    ])
+    .then(([_, clientId]) => {
+      this._storeMediaStream(
         this.easyrtc.myEasyrtcid,
         this.easyrtc.getLocalStream()
       );
 
       this._myRoomJoinTime = this._getRoomJoinTime(clientId);
       this.connectSuccess(clientId);
-    }).catch(this.connectFailure);
+    })
+    .catch(this.connectFailure);
   }
 
   shouldStartConnectionTo(client) {
@@ -176,16 +178,18 @@ class EasyRtcAdapter {
 
   getMediaStream(clientId) {
     var that = this;
-    if (this.audioStreams[clientId]) {
-      NAF.log.write("Already had audio for " + clientId);
-      return Promise.resolve(this.audioStreams[clientId]);
-    } else {
-      NAF.log.write("Waiting on audio for " + clientId);
+    if (this.mediaStreams[clientId]) {
+      NAF.log.write("Already had media for " + clientId);
+      return Promise.resolve(this.mediaStreams[clientId]);
+    }
+    else {
+      NAF.log.write("Waiting on media for " + clientId);
       return new Promise(function(resolve) {
-        that.pendingAudioRequest[clientId] = resolve;
+        that.pendingMediaRequest[clientId] = resolve;
       });
     }
   }
+
 
   disconnect() {
     this.easyrtc.disconnect();
@@ -195,25 +199,25 @@ class EasyRtcAdapter {
    * Privates
    */
 
-  _storeAudioStream(easyrtcid, stream) {
-    this.audioStreams[easyrtcid] = stream;
-    if (this.pendingAudioRequest[easyrtcid]) {
-      NAF.log.write("got pending audio for " + easyrtcid);
-      this.pendingAudioRequest[easyrtcid](stream);
-      delete this.pendingAudioRequest[easyrtcid](stream);
+  _storeMediaStream(easyrtcid, stream) {
+    this.mediaStreams[easyrtcid] = stream;
+    if (this.pendingMediaRequest[easyrtcid]) {
+      NAF.log.write("got pending media for " + easyrtcid);
+      this.pendingMediaRequest[easyrtcid](stream);
+      delete this.pendingMediaRequest[easyrtcid](stream);
     }
   }
 
-  _connect(audioEnabled, connectSuccess, connectFailure) {
+  _connect(mediaEnabled, connectSuccess, connectFailure) {
     var that = this;
 
-    this.easyrtc.setStreamAcceptor(this._storeAudioStream.bind(this));
+    this.easyrtc.setStreamAcceptor(this._storeMediaStream.bind(this));
 
     this.easyrtc.setOnStreamClosed(function(easyrtcid) {
-      delete that.audioStreams[easyrtcid];
+      delete that.mediaStreams[easyrtcid];
     });
 
-    if (audioEnabled) {
+    if (mediaEnabled) {
       this.easyrtc.initMediaSource(
         function() {
           that.easyrtc.connect(that.app, connectSuccess, connectFailure);
